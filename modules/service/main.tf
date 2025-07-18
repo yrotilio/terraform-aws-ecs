@@ -574,7 +574,7 @@ resource "aws_ecs_service" "ignore_task_definition" {
 
 locals {
   # Role is not required if task definition uses `awsvpc` network mode or if a load balancer is not used
-  needs_iam_role  = var.network_mode != "awsvpc" && var.load_balancer != null
+  needs_iam_role  = var.network_mode != "awsvpc" && try(length(var.load_balancer), 0) == 1
   create_iam_role = var.create && var.create_iam_role && local.needs_iam_role
   iam_role_arn    = local.needs_iam_role ? try(aws_iam_role.service[0].arn, var.iam_role_arn) : null
 
